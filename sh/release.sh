@@ -118,7 +118,7 @@ RELEASE_BRANCH="release/$TARGET_VERSION"
 git checkout -b "$RELEASE_BRANCH"
 
 # step 2 - update package version
-npm version "$type" -m "build(versioning): Release - %s"
+npm version "$TYPE" -m "build(versioning): Release - %s"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 3 - push updated package version
