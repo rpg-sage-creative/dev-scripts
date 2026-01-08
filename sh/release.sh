@@ -122,7 +122,7 @@ npm version "$TYPE" -m "build(versioning): Release - %s"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 3 - push updated package version
-git push origin "$RELEASE_BRANCH"
+git push origin "$RELEASE_BRANCH" --tags
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 4 - merge release back into main
