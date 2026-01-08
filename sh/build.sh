@@ -15,7 +15,7 @@ fi
 # make sure we have something to build
 if [ ! -f "./tsconfig.json" ]; then
 	echo "No tsconfig.json file found."
-	exit 0
+	exit 1
 fi
 
 repoName="$(basename -- "$(pwd)")"
