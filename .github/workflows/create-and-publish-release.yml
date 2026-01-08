@@ -1,4 +1,4 @@
-name: create and publish release
+name: Create Release and Publish Package
 
 on:
   push:
@@ -6,19 +6,9 @@ on:
       - v*
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v5
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 24
-  #     - run: npm ci
-  #     - run: npm test
 
   release:
-    # needs: build
-    name: Release pushed tags
+    name: Create Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -33,8 +23,9 @@ jobs:
               --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
               --generate-notes
 
-  publish-gpr:
+  publish:
     needs: release
+    name: Publish Package
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -46,6 +37,8 @@ jobs:
           node-version: 24
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
