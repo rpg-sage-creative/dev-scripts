@@ -32,6 +32,12 @@ if [ -z "$TYPE" ]; then
 	exit 1
 fi
 
+CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+if [ "$CURRENT_BRANCH" != "develop" ]; then
+	echo "Please release from branch: develop"
+	exit 1
+fi
+
 function promptForce {
 	local yn
 	read -p "Force release $TYPE? (y/n) " yn
