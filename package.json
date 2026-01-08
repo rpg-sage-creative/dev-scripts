@@ -1,6 +1,6 @@
 {
 	"name": "@rpg-sage-creative/dev-scripts",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "Scripts used by RSC repos to manage repositories.",
 	"license": "LGPL-3.0-or-later",
 	"repository": {
