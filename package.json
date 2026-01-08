@@ -1,0 +1,28 @@
+{
+	"name": "@rpg-sage-creative/dev-scripts",
+	"version": "0.0.0",
+	"description": "Scripts used by RSC repos to manage repositories.",
+	"license": "LGPL-3.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rpg-sage-creative/dev-scripts.git"
+	},
+	"publishConfig": {
+		"@rpg-sage-creative:registry": "https://npm.pkg.github.com"
+	},
+	"scripts": {
+		"build": "bash ./sh/build.sh",
+		"refresh-and-build": "bash ./sh/build.sh --refreshNodeModules",
+		"release": "bash ./sh/release.sh",
+		"test": "bash ./sh/test.sh",
+		"test-todos": "bash ./sh/create-test-js.sh",
+		"refresh-tags": "git tag -l | xargs git tag -d; git fetch --tags"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"@types/node": "^24.10.4",
+		"jest": "^30.2.0",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {}
+}
