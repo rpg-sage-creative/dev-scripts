@@ -89,15 +89,18 @@ if [ -d "./node_modules/@rpg-sage-creative/dev-scripts" ]; then
 fi
 INDEX_MJS="$SCRIPT_DIR/mjs/index.mjs"
 
-TARGET_VERSION=`node $INDEX_MJS version $TYPE dry | tail -n 1`
+UPDATED_VERSION=`npm version patch --git-tag-version false`
+TARGET_VERSION=${UPDATED_VERSION#v}
+git restore package.json
+git restore package-lock.json
 
-if [ $(git tag -l "v$TARGET_VERSION") ]; then
+if [ $(git tag -l "$UPDATED_VERSION") ]; then
 	echo "Release already exists!"
 	echo "Try: npm run refresh-tags"
 	exit 1
 fi
 
-read -p "Do $TYPE release: $TARGET_VERSION? ([y]es or [n]o): "
+read -p "Do $TYPE release: $UPDATED_VERSION? ([y]es or [n]o): "
 case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
 	y|yes) ;;
 	*) exit 1 ;;
@@ -109,7 +112,7 @@ RELEASE_BRANCH="release/$TARGET_VERSION"
 git checkout -b "$RELEASE_BRANCH"
 
 # step 2 - update package version
-npm version "$type"
+npm version "$type" -m "build(versioning): Release - %s"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 3 - push updated package version
