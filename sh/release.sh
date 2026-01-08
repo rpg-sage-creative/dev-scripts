@@ -95,7 +95,7 @@ if [ -d "./node_modules/@rpg-sage-creative/dev-scripts" ]; then
 fi
 INDEX_MJS="$SCRIPT_DIR/mjs/index.mjs"
 
-UPDATED_VERSION=`npm version patch --git-tag-version false`
+UPDATED_VERSION=`npm version $TYPE --git-tag-version false`
 TARGET_VERSION=${UPDATED_VERSION#v}
 git restore package.json
 git restore package-lock.json
