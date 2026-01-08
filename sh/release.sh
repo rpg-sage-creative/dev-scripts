@@ -69,7 +69,7 @@ function lookForFilesToCommit {
 # check before we build/run
 lookForFilesToCommit
 
-if [ -z "$NO_BUILD" ]; then
+if [ "$NO_BUILD" != "true" ]; then
 	npm run build
 	if [ "$?" != "0" ]; then
 		echo "Build failed, cannot release $TYPE."
@@ -77,7 +77,7 @@ if [ -z "$NO_BUILD" ]; then
 	fi
 fi
 
-if [ -z "$NO_TEST" ]; then
+if [ "$NO_TEST" != "true" ]; then
 	npm run test
 	if [ "$?" != "0" ]; then
 		echo "Test failed, cannot release $TYPE."
