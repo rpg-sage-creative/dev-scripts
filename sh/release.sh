@@ -125,22 +125,22 @@ if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 git push origin "$RELEASE_BRANCH"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
-# step 4 - refresh tags
-git tag -l | xargs git tag -d
-git fetch --tags
-
-# step 5 - merge release back into main
+# step 4 - merge release back into main
 git checkout main && git merge "$RELEASE_BRANCH"
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 
 git push
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 
-# step 6 - merge release back into develop
+# step 5 - merge release back into develop
 git checkout develop && git merge "$RELEASE_BRANCH"
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
 
 git push
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
+
+# step 6 - refresh tags
+git tag -l | xargs git tag -d
+git fetch --tags
 
 echo "Release $TARGET_VERSION ($TYPE) Done."
