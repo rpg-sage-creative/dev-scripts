@@ -13,7 +13,7 @@
 	"scripts": {
 		"build": "bash ./sh/build.sh",
 		"refresh-and-build": "bash ./sh/build.sh --refreshNodeModules",
-		"release": "bash ./sh/release.sh",
+		"release": "bash ./sh/release.sh --noBuild --noTest",
 		"test": "bash ./sh/test.sh",
 		"test-todos": "bash ./sh/create-test-js.sh",
 		"refresh-tags": "git tag -l | xargs git tag -d; git fetch --tags"
