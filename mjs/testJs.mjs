@@ -1,5 +1,10 @@
 import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 
+const ValidDirectoryRegExp = /^(?<!\.)\w/;
+const ValidFileRegExp = /(?<!index)\.([mc])?ts$/;
+const IndexFilterRegExp = /index\.[cm]?ts$/;
+const DotTsExtRegExp = /\.[cm]?ts$/;
+
 /**
  * @param {string} path
  * @returns {boolean}
@@ -7,7 +12,7 @@ import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "nod
 function isValidDirectory(path) {
 	try {
 		const name = path.split("/").pop();
-		return /^(?<!\.)\w/.test(name) && statSync(path).isDirectory();
+		return ValidDirectoryRegExp.test(name) && statSync(path).isDirectory();
 	}catch(ex) {
 		// ignore
 	}
@@ -21,7 +26,7 @@ function isValidDirectory(path) {
 function isValidFile(path) {
 	try {
 		const name = path.split("/").pop();
-		return /(?<!index)\.([mc])?ts$/.test(name) && statSync(path).isFile();
+		return ValidFileRegExp.test(name) && statSync(path).isFile();
 	}catch(ex) {
 		// ignore
 	}
@@ -67,17 +72,32 @@ function getTsFiles(path) {
 function createTodo(path, name) {
 	let output = [];
 
+	// split path
+	const pathParts = path.split("/");
+	// start from `src`; remove all ./ or ../ or anything else before /src/
+	while (pathParts.length && pathParts[0] !== "src") pathParts.shift();
+	// remove `src` to start walking path
+	pathParts.shift();
+
+	// if we are in root, use name for the base describe()
+	if (!pathParts.length) {
+		pathParts.push(name);
+	}
+
 	let tabCount = 0;
 
-	path.replace(/\.\/+src\//, "").split("/").forEach(part => {
+	// describe each child folder and count tabs
+	pathParts.forEach(part => {
 		const tabs = "".padStart(tabCount, "\t");
 		output.push(`${tabs}describe("${part}", () => {`);
 		tabCount++;
 	});
 
+	// add todo
 	const tabs = "".padStart(tabCount + 1, "\t");
 	output.push(`${tabs}test.todo("${name}");`);
 
+	// close each describe block
 	while (tabCount--) {
 		const tabs = "".padStart(tabCount, "\t");
 		output.push(`${tabs}});`);
@@ -98,14 +118,13 @@ function process(folderPath, recursive) {
 
 	const fileNames = getTsFiles(folderPath);
 
-	fileNames.filter(name => !/index\.[cm]?ts$/.test(name)).forEach(fileName => {
-		const testFolderPath = folderPath.replace(/\/src\//, "/test/");
-		const fileNameRoot = fileName.replace(/\.[cm]?ts$/, "");
-		const testOutput = createTodo(folderPath, fileNameRoot);
+	fileNames.filter(name => !IndexFilterRegExp.test(name)).forEach(fileName => {
+		const testFolderPath = folderPath.replace("/src", "/test");
+		const fileNameRoot = fileName.replace(DotTsExtRegExp, "");
 		const testFileName = `${testFolderPath}/${fileNameRoot}.test.js`;
 		if (!existsSync(testFileName)) {
 			mkdirSync(testFolderPath, { recursive:true });
-			writeFileSync(testFileName, testOutput);
+			writeFileSync(testFileName, createTodo(folderPath, fileNameRoot));
 		}
 	});
 
@@ -122,5 +141,6 @@ function process(folderPath, recursive) {
 export function testJs(args, options) {
 	const rootPath = options.rootPath ?? args[0] ?? "./";
 	const recursive = options.r ?? options.recursive ?? false;
-	process(`${rootPath}/src`, recursive);
+	const folderPath = `${rootPath}/src`.replaceAll("//", "/");
+	process(folderPath, recursive);
 }
