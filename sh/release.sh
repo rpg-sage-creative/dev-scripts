@@ -93,6 +93,9 @@ SCRIPT_DIR="."
 if [ -d "./node_modules/@rpg-sage-creative/dev-scripts" ]; then
 	SCRIPT_DIR="./node_modules/@rpg-sage-creative/dev-scripts"
 fi
+if [ -d "./node_modules/@rsc-utils/dev-scripts" ]; then
+	SCRIPT_DIR="./node_modules/@rsc-utils/dev-scripts"
+fi
 INDEX_MJS="$SCRIPT_DIR/mjs/index.mjs"
 
 UPDATED_VERSION=`npm version $TYPE --git-tag-version false`
