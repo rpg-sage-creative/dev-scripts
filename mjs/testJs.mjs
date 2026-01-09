@@ -73,7 +73,7 @@ function createTodo(path, name) {
 	let output = [];
 
 	// split path
-	const pathParts = path.split("/");
+	const pathParts = path.split("/").filter(s => s);
 	// start from `src`; remove all ./ or ../ or anything else before /src/
 	while (pathParts.length && pathParts[0] !== "src") pathParts.shift();
 	// remove `src` to start walking path
@@ -94,7 +94,7 @@ function createTodo(path, name) {
 	});
 
 	// add todo
-	const tabs = "".padStart(tabCount + 1, "\t");
+	const tabs = "".padStart(tabCount, "\t");
 	output.push(`${tabs}test.todo("${name}");`);
 
 	// close each describe block
