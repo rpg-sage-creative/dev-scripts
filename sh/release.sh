@@ -38,6 +38,15 @@ if [ "$CURRENT_BRANCH" != "develop" ]; then
 	exit 1
 fi
 
+function lookForXUtils {
+	if [ ! -z "$(grep 'x-utils' package.json)" ]; then
+		echo "Please update your package.json to replace x-utils with ${PWD##*/}"
+		exit 1
+	fi
+}
+
+lookForXUtils
+
 function promptForce {
 	local yn
 	read -p "Force release $TYPE? (y/n) " yn
