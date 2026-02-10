@@ -36,7 +36,7 @@ function parsePairs(args) {
 }
 
 async function runCommand() {
-	/** @type {string} */
+	/** @type {"indexTs"|"testJs"|"release"} */
 	const command = process.argv[2];
 
 	const input = process.argv.slice(3);
@@ -51,9 +51,15 @@ async function runCommand() {
 				return indexTs(args, options);
 			case "testJs":
 				return testJs(args, options);
+			case "release":
+				return release(args, options);
 			default:
-				console.error(`Invalid command: ${command}`);
-				console.log({argv:process.argv,command,args,options});
+				if (command) {
+					console.error(`Invalid command: ${command}`);
+					console.log({argv:process.argv,command,args,options});
+				}else {
+					console.warn(`usage:\n  pnpm dev-scripts indexTs -r\n  pnpm dev-scripts testJs -r`);
+				}
 				process.exit(1);
 		}
 	}catch(ex) {

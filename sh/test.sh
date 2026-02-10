@@ -1,16 +1,6 @@
 #!/bin/bash
 
-# ensure repo root folder
-if [ ! -d "./.git" ]; then
-	while [ ! -d "./.git" ]; do
-		cd ..
-		if [ "$(pwd)" = "/" ]; then
-			echo "No .git folder found."
-			exit 1
-		fi
-	done
-	echo "cd $(pwd)"
-fi
+echo "DEPRECATED: dev-scripts/sh/test.sh"
 
 if [ ! -d "./test" ]; then
 	echo "No ./test folder found."
@@ -27,7 +17,7 @@ fi
 
 # we don't need to build if we are passed a specific test file
 if [ -z "$specificFile" ]; then
-	npm run build
+	pnpm build
 	if [ "$?" != "0" ]; then echo "Unable to Test!"; exit 1; fi
 fi
 

@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# ensure repo root folder
-if [ ! -d "./.git" ]; then
-	while [ ! -d "./.git" ]; do
-		cd ..
-		if [ "$(pwd)" = "/" ]; then
-			echo "No .git folder found."
-			exit 1
-		fi
-	done
-	echo "cd $(pwd)"
-fi
-
 # get release type and branch from args
 TYPE=""
 NO_BUILD=""
@@ -27,8 +15,8 @@ done
 
 # ensure release type and branch args exist
 if [ -z "$TYPE" ]; then
-	echo "release.sh $TYPE"
-	echo "/bin/bash release.sh major|minor|patch"
+	echo "Error: Invalid release type '$TYPE'"
+	echo "pnpm dev-scripts release major|minor|patch"
 	exit 1
 fi
 
@@ -79,7 +67,7 @@ function lookForFilesToCommit {
 lookForFilesToCommit
 
 if [ "$NO_BUILD" != "true" ]; then
-	npm run build
+	pnpm build
 	if [ "$?" != "0" ]; then
 		echo "Build failed, cannot release $TYPE."
 		exit 1
@@ -87,7 +75,7 @@ if [ "$NO_BUILD" != "true" ]; then
 fi
 
 if [ "$NO_TEST" != "true" ]; then
-	npm run test
+	pnpm test
 	if [ "$?" != "0" ]; then
 		echo "Test failed, cannot release $TYPE."
 		exit 1
@@ -97,16 +85,6 @@ fi
 # check after we build/run (in case building/testing altered files)
 lookForFilesToCommit
 
-# get the right scripts folder
-SCRIPT_DIR="."
-if [ -d "./node_modules/@rpg-sage-creative/dev-scripts" ]; then
-	SCRIPT_DIR="./node_modules/@rpg-sage-creative/dev-scripts"
-fi
-if [ -d "./node_modules/@rsc-utils/dev-scripts" ]; then
-	SCRIPT_DIR="./node_modules/@rsc-utils/dev-scripts"
-fi
-INDEX_MJS="$SCRIPT_DIR/mjs/index.mjs"
-
 UPDATED_VERSION=`npm version $TYPE --git-tag-version false`
 TARGET_VERSION=${UPDATED_VERSION#v}
 git restore package.json
@@ -114,7 +92,7 @@ git restore package-lock.json
 
 if [ $(git tag -l "$UPDATED_VERSION") ]; then
 	echo "Release already exists!"
-	echo "Try: npm run refresh-tags"
+	echo "Try: pnpm dev-scripts refresh-tags"
 	exit 1
 fi
 
