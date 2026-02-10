@@ -85,9 +85,17 @@ fi
 # check after we build/run (in case building/testing altered files)
 lookForFilesToCommit
 
+function gitRefresh {
+	git fetch -p
+	git tag -l | xargs git tag -d
+	git fetch --tags
+}
+
 UPDATED_VERSION=`pnpm version $TYPE --git-tag-version false`
 TARGET_VERSION=${UPDATED_VERSION#v}
 git restore package.json
+
+gitRefresh
 
 if [ $(git tag -l "$UPDATED_VERSION") ]; then
 	echo "Release already exists!"
@@ -129,7 +137,6 @@ git push
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
 
 # step 6 - refresh tags
-git tag -l | xargs git tag -d
-git fetch --tags
+gitRefresh
 
 echo "Release $TARGET_VERSION ($TYPE) Done."
