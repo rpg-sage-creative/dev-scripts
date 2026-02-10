@@ -85,10 +85,9 @@ fi
 # check after we build/run (in case building/testing altered files)
 lookForFilesToCommit
 
-UPDATED_VERSION=`npm version $TYPE --git-tag-version false`
+UPDATED_VERSION=`pnpm version $TYPE --git-tag-version false`
 TARGET_VERSION=${UPDATED_VERSION#v}
 git restore package.json
-git restore package-lock.json
 
 if [ $(git tag -l "$UPDATED_VERSION") ]; then
 	echo "Release already exists!"
@@ -108,7 +107,7 @@ RELEASE_BRANCH="release/$TARGET_VERSION"
 git checkout -b "$RELEASE_BRANCH"
 
 # step 2 - update package version
-npm version "$TYPE" -m "build(versioning): Release - %s"
+pnpm version "$TYPE" -m "build(versioning): Release - %s"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 3 - push updated package version
