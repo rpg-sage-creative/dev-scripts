@@ -10,7 +10,6 @@
 	"publishConfig": {
 		"@rpg-sage-creative:registry": "https://npm.pkg.github.com"
 	},
-	"-bin": "./mjs/index.mjs",
 	"bin": "./sh/bin.sh",
 	"scripts": {
 		"scrub": "pnpm run '/^scrub::.*/'",
@@ -26,16 +25,17 @@
 		"-build::clean-build-folders": "find . -type d -name 'build' -not -path './node_modules/*' -not -path './modules/*'  -exec rm -rf {} +",
 		"build::clean-build-info": "rm -f *.tsbuildinfo",
 		"-build::clean-build-infos": "find . -type f -name '*.tsbuildinfo' -not -path './node_modules/*' -exec rm -rf {} +",
-		"build::create-indexes": "pnpm dev-scripts create-indexes",
-		"build": "tsc --build --force tsconfig.json && tsc --build --force tsconfig.d.json",
+		"build::create-indexes": "[ -d './src' ] && pnpm dev-scripts create-indexes",
+		"build": "[ -f './tsconfig.json' ] && tsc --build --force tsconfig.json",
+		"postbuild": "[ -f './tsconfig.d.json' ] && tsc --build --force tsconfig.d.json",
 
 		"buildIfMissing": "[ -d './build' ] || pnpm build",
 
 		"build:fresh": "pnpm scrub && pnpm build",
 
-		"pretest": "pnpm build && node -e \"import * as utils from './build/index.js';\"",
-		"test": "node --no-warnings --experimental-vm-modules ./node_modules/jest/bin/jest",
-		"test:one": "node --no-warnings --experimental-vm-modules ./node_modules/jest/bin/jest",
+		"pretest": "[ -d './test' ] && pnpm build && node -e \"import * as utils from './build/index.js';\"",
+		"test": "[ -d './test' ] && node --no-warnings --experimental-vm-modules ./node_modules/jest/bin/jest",
+		"test:one": "[ -d './test' ] && node --no-warnings --experimental-vm-modules ./node_modules/jest/bin/jest",
 
 		"release": "pnpm dev-scripts create-release",
 
