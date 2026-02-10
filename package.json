@@ -12,8 +12,8 @@
 	},
 	"bin": "./sh/bin.sh",
 	"scripts": {
-		"release": "/bin/bash ./scripts/bin.sh release",
-		"refresh-tags": "/bin/bash ./scripts/bin.sh refresh-tags"
+		"release": "/bin/bash ./sh/bin.sh release",
+		"refresh-tags": "/bin/bash ./sh/bin.sh refresh-tags"
 	},
 	"devDependencies": {},
 	"dependencies": {}
