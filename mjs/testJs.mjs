@@ -134,7 +134,7 @@ function process(folderPath, recursive) {
 }
 
 /**
- * Looks for any .ts file that doesn't have a corresponding .test.js file in the /tests folder and creates one with a todo.
+ * Looks for any .ts file that doesn't have a corresponding .test.js file in the /test folder and creates one with a todo.
  * @param {string[]} args
  * @param {{ r?:boolean; recursive?:boolean; rootPath?:string; }} options
  */
