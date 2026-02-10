@@ -12,7 +12,7 @@
 	},
 	"bin": "./sh/bin.sh",
 	"scripts": {
-		"release": "/bin/bash ./sh/bin.sh release",
+		"release": "/bin/bash ./sh/bin.sh create-release",
 		"refresh-tags": "/bin/bash ./sh/bin.sh refresh-tags"
 	},
 	"devDependencies": {},
