@@ -111,24 +111,30 @@ pnpm version "$TYPE" -m "build(versioning): Release - %s"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 3 - push updated package version
-git push origin "$RELEASE_BRANCH" --tags
+git push origin "$RELEASE_BRANCH"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 4 - merge release back into main
-git checkout main && git merge "$RELEASE_BRANCH"
+git checkout main
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
-
+git merge "$RELEASE_BRANCH" -m "Merge branch '$RELEASE_BRANCH'"
+if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 git push
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 
 # step 5 - merge release back into develop
-git checkout develop && git merge "$RELEASE_BRANCH"
+git checkout develop
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
-
+git merge "$RELEASE_BRANCH" -m "Merge branch '$RELEASE_BRANCH'"
+if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
 git push
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
 
-# step 6 - refresh tags
+# step 6 - push tags
+git push --tags
+if [ "$?" != "0" ]; then echo "Failed push tags!"; exit 1; fi
+
+# step 7 - refresh tags
 git tag -l | xargs git tag -d
 git fetch --tags
 
