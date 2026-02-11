@@ -117,7 +117,7 @@ if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 # step 4 - merge release back into main
 git checkout main
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
-git merge "$RELEASE_BRANCH"
+git merge "$RELEASE_BRANCH" -m "Merge branch '$RELEASE_BRANCH'"
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 git push
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
@@ -125,7 +125,7 @@ if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 # step 5 - merge release back into develop
 git checkout develop
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
-git merge "$RELEASE_BRANCH"
+git merge "$RELEASE_BRANCH" -m "Merge branch '$RELEASE_BRANCH'"
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
 git push
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
