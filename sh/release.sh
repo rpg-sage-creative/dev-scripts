@@ -85,17 +85,9 @@ fi
 # check after we build/run (in case building/testing altered files)
 lookForFilesToCommit
 
-function gitRefresh {
-	git fetch -p
-	git tag -l | xargs git tag -d
-	git fetch --tags
-}
-
 UPDATED_VERSION=`pnpm version $TYPE --git-tag-version false`
 TARGET_VERSION=${UPDATED_VERSION#v}
 git restore package.json
-
-gitRefresh
 
 if [ $(git tag -l "$UPDATED_VERSION") ]; then
 	echo "Release already exists!"
@@ -119,24 +111,23 @@ pnpm version "$TYPE" -m "build(versioning): Release - %s"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 3 - push updated package version
-git push origin "$RELEASE_BRANCH" --tags
+git push origin "$RELEASE_BRANCH"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 4 - merge release back into main
-git checkout main && git merge "$RELEASE_BRANCH"
-if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
-
-git push
+git checkout main && git merge "$RELEASE_BRANCH" && git push
 if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
 
 # step 5 - merge release back into develop
-git checkout develop && git merge "$RELEASE_BRANCH"
+git checkout develop && git merge "$RELEASE_BRANCH" && git push
 if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
 
-git push
-if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
+# step 6 - push tags
+git push --tags
+if [ "$?" != "0" ]; then echo "Failed push tags!"; exit 1; fi
 
-# step 6 - refresh tags
-gitRefresh
+# step 7 - refresh tags
+git tag -l | xargs git tag -d
+git fetch --tags
 
 echo "Release $TARGET_VERSION ($TYPE) Done."
