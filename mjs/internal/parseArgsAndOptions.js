@@ -21,7 +21,7 @@ function parsePairs(args) {
         return args;
     }, {});
 }
-export function parseArgsAndOptions(sliceIndex = 2) {
+export function parseArgsAndOptions(sliceIndex = 3) {
     const input = process.argv.slice(sliceIndex);
     const args = input.filter(arg => !arg.startsWith("-") && !arg.includes("="));
     const pairs = parsePairs(input);
