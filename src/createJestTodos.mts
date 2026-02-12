@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { getSubFolders } from "./internal/getSubFolders.js";
 import { getTsFiles } from "./internal/getTsFiles.js";
 import { parseArgsAndOptions } from "./internal/parseArgsAndOptions.js";
@@ -53,7 +54,7 @@ function process(folderPath: string, recursive: boolean) {
 	fileNames.filter(name => !IndexFilterRegExp.test(name)).forEach(fileName => {
 		const testFolderPath = folderPath.replace("/src", "/test");
 		const fileNameRoot = fileName.replace(DotTsExtRegExp, "");
-		const testFileName = `${testFolderPath}/${fileNameRoot}.test.js`;
+		const testFileName = join(testFolderPath, `${fileNameRoot}.test.js`);
 		if (!existsSync(testFileName)) {
 			mkdirSync(testFolderPath, { recursive:true });
 			writeFileSync(testFileName, createTodo(folderPath, fileNameRoot));
@@ -61,7 +62,7 @@ function process(folderPath: string, recursive: boolean) {
 	});
 
 	if (recursive) {
-		getSubFolders(folderPath).forEach(pathName => process(`${folderPath}/${pathName}`, true));
+		getSubFolders(folderPath).forEach(pathName => process(join(folderPath, pathName), true));
 	}
 }
 
@@ -69,10 +70,9 @@ function process(folderPath: string, recursive: boolean) {
  * Looks for any .ts file that doesn't have a corresponding .test.js file in the /test folder and creates one with a todo.
  */
 async function main() {
-	const { args, options } = parseArgsAndOptions();
+	const { args, options } = parseArgsAndOptions<{ rootPath?:string; notRecursive?:number; }>();
 	const rootPath = options.rootPath ?? args[0] ?? "./";
-	const recursive = options.r ?? options.recursive ?? false;
-	const folderPath = `${rootPath}/src`.replaceAll("//", "/");
-	process(folderPath, !!recursive);
+    const recursive = !options.notRecursive;
+	process(join(rootPath, "src"), recursive);
 }
 await main();

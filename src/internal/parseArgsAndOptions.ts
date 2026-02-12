@@ -26,11 +26,11 @@ function parsePairs(args: string[]) {
 	}, {} as Record<string, string>);
 }
 
-export function parseArgsAndOptions(sliceIndex = 3) {
+export function parseArgsAndOptions<T extends Record<string, string | number>>(sliceIndex = 3): { args:string[], options:T; } {
 	const input = process.argv.slice(sliceIndex);
 	const args = input.filter(arg => !arg.startsWith("-") && !arg.includes("="));
 	const pairs = parsePairs(input);
 	const flags = parseFlags(input);
-	const options = { ...pairs, ...flags };
+	const options = { ...pairs, ...flags } as T;
 	return { args, options };
 }
