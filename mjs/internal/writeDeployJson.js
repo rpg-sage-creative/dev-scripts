@@ -1,0 +1,41 @@
+import { readJsonFile } from "./readJsonFile.js";
+import { writeJsonFile } from "./writeJsonFile.js";
+function ensureHost(input) {
+    if (!input)
+        return {};
+    const first = Array.isArray(input) ? input[0] : input;
+    const [host, port] = typeof (first) === "string" ? first.split(":") : [first.host, first.port];
+    return { host, port };
+}
+const ScriptKeys = ["pre-setup", "post-setup", "pre-deploy-local", "pre-deploy", "post-deploy"];
+function formatScript({ where, codeName }, json, key) {
+    if (!json || !key)
+        return undefined;
+    let script = json[key];
+    if (!script)
+        return script;
+    script = Array.isArray(script) ? script.join("; ") : script;
+    const host = ensureHost(json.host);
+    json[key] = script
+        .replaceAll("${where}", where)
+        .replaceAll("${codeName}", codeName)
+        .replaceAll("${user}", json.user ?? "")
+        .replaceAll("-i ${key}", json.key ? "-i " + json.key : "")
+        .replaceAll("${host}", host?.host ?? "")
+        .replaceAll("-P ${port}", host?.port ? "-P " + host.port : "")
+        .replaceAll("${botRoot}", json?.botRoot);
+    return json[key];
+}
+export async function writeDeployJson(args) {
+    const configJson = await readJsonFile(`./config/config.json`).catch(() => ({})) ?? {};
+    const deployJson = {
+        ...configJson["deploy"],
+        ...(configJson[args.where] ?? {})["deploy"],
+        codeName: args.codeName
+    };
+    ScriptKeys.forEach(scriptKey => formatScript(args, deployJson, scriptKey));
+    deployJson.host = [ensureHost(deployJson.host)];
+    deployJson.ref = deployJson.ref?.replaceAll("${branch}", args.branch);
+    deployJson.path = deployJson.botRoot ? deployJson.botRoot + "/" + args.where : undefined;
+    await writeJsonFile(`./config/deploy-${args.what}-${args.where}.json`, deployJson);
+}

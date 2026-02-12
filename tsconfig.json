@@ -1,0 +1,67 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"alwaysStrict": true,
+		"allowSyntheticDefaultImports": true,
+
+		"composite": false,
+
+		"declaration": false,
+		// "declarationDir": "./types",
+		// "declarationMap": true,
+
+		// "esModuleInterop": true,
+
+		"forceConsistentCasingInFileNames": true,
+
+		"incremental": false,
+
+		// "importsNotUsedAsValues": "error",
+		// "verbatimModuleSyntax": true,
+
+		"lib": [ "ES2024" ],
+		// "locale": "en-US",
+
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+
+		"newLine": "LF",
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": true,
+		// "noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		// "noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"outDir": "./mjs",
+
+		"pretty": true,
+
+		"removeComments": true,
+
+		"rootDir": "./src",
+
+		"skipLibCheck": true,
+
+		"sourceMap": false,
+		"strict": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"stripInternal": true,
+
+		"target": "ES2024",
+
+		"verbatimModuleSyntax": true
+	},
+	"exclude": [
+		".github",
+		".vscode",
+		"mjs",
+		"node_modules",
+		"sh"
+	]
+}

@@ -1,75 +1,12 @@
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { getSubFolders } from "./internal/getSubFolders.js";
+import { getTsFiles } from "./internal/getTsFiles.js";
+import { parseArgsAndOptions } from "./internal/parseArgsAndOptions.js";
 
-const ValidDirectoryRegExp = /^(?<!\.)\w/;
-const ValidFileRegExp = /(?<!index)\.([mc])?ts$/;
 const IndexFilterRegExp = /index\.[cm]?ts$/;
 const DotTsExtRegExp = /\.[cm]?ts$/;
 
-/**
- * @param {string} path
- * @returns {boolean}
- */
-function isValidDirectory(path) {
-	try {
-		const name = path.split("/").pop();
-		return ValidDirectoryRegExp.test(name) && statSync(path).isDirectory();
-	}catch(ex) {
-		// ignore
-	}
-	return false;
-}
-
-/**
- * @param {string} path
- * @returns {boolean}
- */
-function isValidFile(path) {
-	try {
-		const name = path.split("/").pop();
-		return ValidFileRegExp.test(name) && statSync(path).isFile();
-	}catch(ex) {
-		// ignore
-	}
-	return false;
-}
-
-/**
- * Returns all subFolder names that don't start with a period.
- * @param {string} path
- * @returns {string[]}
- */
-function getSubFolders(path) {
-	try {
-		if (isValidDirectory(path)) {
-			const children = readdirSync(path);
-			const filtered = children.filter(child => isValidDirectory(`${path}/${child}`));
-			return filtered;
-		}
-	}catch (ex) {
-		// ignore
-	}
-	return [];
-}
-
-/**
- * Returns all fileNames names that end in .ts
- * @param {string} path
- * @returns {string[]}
- */
-function getTsFiles(path) {
-	try {
-		if (isValidDirectory(path)) {
-			const children = readdirSync(path);
-			const filtered = children.filter(child => isValidFile(`${path}/${child}`));
-			return filtered;
-		}
-	}catch (ex) {
-		// ignore
-	}
-	return [];
-}
-
-function createTodo(path, name) {
+function createTodo(path: string, name: string) {
 	let output = [];
 
 	// split path
@@ -106,12 +43,7 @@ function createTodo(path, name) {
 	return output.join("\n");
 }
 
-/**
- *
- * @param {string} folderPath
- * @param {boolean} recursive
- */
-function process(folderPath, recursive) {
+function process(folderPath: string, recursive: boolean) {
 	if (!existsSync(folderPath)) {
 		return;
 	}
@@ -135,12 +67,12 @@ function process(folderPath, recursive) {
 
 /**
  * Looks for any .ts file that doesn't have a corresponding .test.js file in the /test folder and creates one with a todo.
- * @param {string[]} args
- * @param {{ r?:boolean; recursive?:boolean; rootPath?:string; }} options
  */
-export function testJs(args, options) {
+async function main() {
+	const { args, options } = parseArgsAndOptions();
 	const rootPath = options.rootPath ?? args[0] ?? "./";
 	const recursive = options.r ?? options.recursive ?? false;
 	const folderPath = `${rootPath}/src`.replaceAll("//", "/");
-	process(folderPath, recursive);
+	process(folderPath, !!recursive);
 }
+await main();
