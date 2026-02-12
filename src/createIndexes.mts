@@ -1,4 +1,5 @@
 import { existsSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { getSubFolders } from "./internal/getSubFolders.js";
 import { getTsFiles } from "./internal/getTsFiles.js";
 import { isValidFile } from "./internal/isValidFile.js";
@@ -27,10 +28,10 @@ function process(folderPath: string, recursive: boolean): number {
 	const subNames = getSubFolders(folderPath);
 	subNames.filter(subFilter).forEach(subName => {
 		if (recursive) {
-			if (process(`${folderPath}/${subName}`, true) > 0) {
+			if (process(join(folderPath, subName), true) > 0) {
 				lines.push(exportSubMap(subName));
 			}
-		}else if (isValidFile(`${folderPath}/${subName}/index.ts`)) {
+		}else if (isValidFile(join(folderPath, subName, "index.ts"))) {
 			lines.push(exportSubMap(subName));
 		}
 	});
@@ -41,7 +42,7 @@ function process(folderPath: string, recursive: boolean): number {
 
 	// write file
 	if (lines.length) {
-		writeFileSync(`${folderPath}/index.ts`, lines.join("\n"));
+		writeFileSync(join(folderPath, "index.ts"), lines.join("\n"));
 	}
 
 	// return line count
@@ -52,9 +53,9 @@ function process(folderPath: string, recursive: boolean): number {
  * Looks in rootPath/types and updates index.ts to export all contents from all other .ts files.
  */
 async function main() {
-	const { args, options } = parseArgsAndOptions();
+	const { args, options } = parseArgsAndOptions<{ rootPath?:string; notRecursive?:number; }>();
 	const rootPath = options.rootPath ?? args[0] ?? "./";
-	const recursive = options.r ?? options.recursive ?? false;
-	process(`${rootPath}/src`, !!recursive);
+	const recursive = !options.notRecursive;
+	process(join(rootPath, "src"), recursive);
 }
 await main();

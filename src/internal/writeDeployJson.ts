@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { readJsonFile } from "./readJsonFile.js";
 import { writeJsonFile } from "./writeJsonFile.js";
 
@@ -62,7 +63,7 @@ export async function writeDeployJson<T extends Record<string, string>>(args: T)
 	ScriptKeys.forEach(scriptKey => formatScript(args, deployJson, scriptKey));
 	deployJson.host = [ensureHost(deployJson.host)];
 	deployJson.ref = deployJson.ref?.replaceAll("${branch}", args.branch);
-	deployJson.path = deployJson.botRoot ? deployJson.botRoot + "/" + args.where : undefined;
+	deployJson.path = deployJson.botRoot ? join(deployJson.botRoot, args.where) : undefined;
 
 	await writeJsonFile(`./config/deploy-${args.what}-${args.where}.json`, deployJson);
 }
