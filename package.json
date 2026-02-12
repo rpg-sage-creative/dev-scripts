@@ -3,6 +3,7 @@
 	"version": "1.3.1",
 	"description": "Scripts used by RSC repos to manage repositories.",
 	"license": "LGPL-3.0-or-later",
+	"type": "module",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/rpg-sage-creative/dev-scripts.git"
@@ -12,9 +13,13 @@
 	},
 	"bin": "./sh/bin.sh",
 	"scripts": {
-		"release": "/bin/bash ./sh/bin.sh create-release --noBuild --noTest",
-		"refresh-tags": "/bin/bash ./sh/bin.sh refresh-tags"
+		"prebuild": "rm -fr mjs tsconfig.tsbuildinfo",
+		"build": "tsc --build --force tsconfig.json",
+		"release": "/bin/bash ./sh/bin.sh create-release --noTest"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@types/node": "^24.10.4",
+		"typescript": "^5.9.3"
+	},
 	"dependencies": {}
 }
