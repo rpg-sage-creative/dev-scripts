@@ -5,26 +5,32 @@ on:
     tags:
       - v*
 
+env:
+  NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  RELEASE_TAG: ${{ github.ref_name }}
+
 jobs:
 
   build:
     name: Build Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: "Checkout Release Tag"
+        uses: actions/checkout@v5
+      - name: "Setup Node: 24"
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://npm.pkg.github.com/
-      - uses: pnpm/action-setup@v4
+      - name: "Setup PNPM: 10"
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      - run: pnpm install
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: pnpm build
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Build Repo
+        run: pnpm build
 
   release:
     needs: build
@@ -33,14 +39,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}
+      - name: Create Release
         run: |
-          gh release create "$tag" \
+          gh release create "$RELEASE_TAG" \
               --repo="$GITHUB_REPOSITORY" \
-              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --title="${GITHUB_REPOSITORY#*/} ${RELEASE_TAG#v}" \
               --generate-notes
 
   publish:
@@ -51,17 +54,18 @@ jobs:
       packages: write
       contents: read
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: "Checkout Release Tag"
+        uses: actions/checkout@v5
+      - name: "Setup Node: 24"
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://npm.pkg.github.com/
-      - uses: pnpm/action-setup@v4
+      - name: "Setup PNPM: 10"
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      - run: pnpm install
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - run: pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Publish Package
+        run: pnpm publish --no-git-checks

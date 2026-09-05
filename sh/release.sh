@@ -85,23 +85,22 @@ fi
 # check after we build/run (in case building/testing altered files)
 lookForFilesToCommit
 
-UPDATED_VERSION=`pnpm version $TYPE --git-tag-version false`
-TARGET_VERSION=${UPDATED_VERSION#v}
+RELEASE_TAG=`npm version $TYPE --git-tag-version false`
 git restore package.json
 
-if [ $(git tag -l "$UPDATED_VERSION") ]; then
+if [ $(git tag -l "$RELEASE_TAG") ]; then
 	echo "Release already exists!"
 	echo "Try: pnpm dev-scripts refresh-tags"
 	exit 1
 fi
 
-read -p "Do $TYPE release: $UPDATED_VERSION? ([y]es or [n]o): "
+read -p "Do $TYPE release: $RELEASE_TAG? ([y]es or [n]o): "
 case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
 	y|yes) ;;
 	*) exit 1 ;;
 esac
 
-RELEASE_BRANCH="release/$TARGET_VERSION"
+RELEASE_BRANCH="release/$RELEASE_TAG"
 
 # step 1 - create release branch
 git checkout -b "$RELEASE_BRANCH"
@@ -115,27 +114,26 @@ git push origin "$RELEASE_BRANCH"
 if [ "$?" != "0" ]; then echo "Release Failed!"; exit 1; fi
 
 # step 4 - merge release back into main
+git fetch origin main:main
 git checkout main
-if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
-git merge "$RELEASE_BRANCH" -m "Merge branch '$RELEASE_BRANCH'"
-if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
-git push
-if [ "$?" != "0" ]; then echo "Failed merge to main!"; exit 1; fi
+git merge "$RELEASE_BRANCH" -m "Merging '$RELEASE_BRANCH'"
+git push origin main
 
-# step 5 - merge release back into develop
-git checkout develop
-if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
-git merge "$RELEASE_BRANCH" -m "Merge branch '$RELEASE_BRANCH'"
-if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
-git push
-if [ "$?" != "0" ]; then echo "Failed merge to develop!"; exit 1; fi
+# step 5 - recreate develop
+git branch -D develop || true
+git push origin --delete develop || true
+git checkout -b develop
+git push origin develop
 
-# step 6 - push tags
+# step 6 - delete release branch
+git branch -D "$RELEASE_BRANCH" || true
+git push origin --delete "$RELEASE_BRANCH" || true
+# step 7 - push tags
 git push --tags
 if [ "$?" != "0" ]; then echo "Failed push tags!"; exit 1; fi
 
-# step 7 - refresh tags
+# step 8 - refresh tags
 git tag -l | xargs git tag -d
 git fetch --tags
 
-echo "Release $TARGET_VERSION ($TYPE) Done."
+echo "Release $RELEASE_TAG ($TYPE) Done."
