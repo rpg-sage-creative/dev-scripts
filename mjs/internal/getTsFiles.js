@@ -3,6 +3,9 @@ import { join } from "node:path";
 import { isValidDirectory } from "./isValidDirectory.js";
 import { isValidFile } from "./isValidFile.js";
 import { nameSorter } from "./nameSorter.js";
+/**
+ * Returns all fileNames names that end in .ts
+ */
 export function getTsFiles(path) {
     try {
         if (isValidDirectory(path)) {
@@ -13,6 +16,7 @@ export function getTsFiles(path) {
         }
     }
     catch (ex) {
+        // ignore
     }
     return [];
 }

@@ -6,6 +6,7 @@ export function isValidFile(path) {
         return ValidFileRegExp.test(name) && statSync(path).isFile();
     }
     catch (ex) {
+        // ignore
     }
     return false;
 }

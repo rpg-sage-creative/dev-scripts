@@ -13,12 +13,23 @@
 	},
 	"bin": "./sh/bin.sh",
 	"scripts": {
-		"prebuild": "rm -fr mjs tsconfig.tsbuildinfo",
-		"build": "tsc --build --force tsconfig.json",
+		"scrub": "pnpm run '/^scrub::.*/'",
+		"scrub::node_modules": "rm -rf node_modules",
+		"scrub::npm": "rm -f package-lock.json",
+		"scrub::pnpm": "rm -f pnpm-lock.yaml",
+		"scrub::logs": "rm -rf ./logs/*.log",
+		"postscrub": "pnpm install",
+		"scrubIfMissing": "[ -d './node_modules' ] && [ -f './pnpm-lock.yaml' ] || pnpm scrub",
+		"prebuild": "pnpm scrubIfMissing && pnpm run '/^build::.*/'",
+		"build::clean-build-folder": "rm -rf build mjs",
+		"build::clean-build-info": "rm -f *.tsbuildinfo",
+		"build": "[ -f './tsconfig.json' ] && tsc -b --force tsconfig.json",
+		"buildIfMissing": "[ -d './build' ] || pnpm build",
+		"build:fresh": "pnpm scrub && pnpm build",
 		"release": "/bin/bash ./sh/bin.sh create-release --noTest"
 	},
 	"devDependencies": {
-		"@types/node": "^24.10.4",
-		"typescript": "^5.9.3"
+		"@types/node": "^24.12.2",
+		"typescript": "^7.0.2"
 	}
 }

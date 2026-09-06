@@ -10,12 +10,16 @@ function ensureHost(input) {
 }
 const ScriptKeys = ["pre-setup", "post-setup", "pre-deploy-local", "pre-deploy", "post-deploy"];
 function formatScript({ where, codeName }, json, key) {
+    // gotta have json and key
     if (!json || !key)
         return undefined;
+    // get script from json
     let script = json[key];
     if (!script)
         return script;
+    // ensure script is string
     script = Array.isArray(script) ? script.join("; ") : script;
+    // ensure valid host data
     const host = ensureHost(json.host);
     json[key] = script
         .replaceAll("${where}", where)
@@ -27,11 +31,17 @@ function formatScript({ where, codeName }, json, key) {
         .replaceAll("${botRoot}", json?.botRoot);
     return json[key];
 }
+/**
+ * create deploy json files for deploying the bot or services
+ */
 export async function writeDeployJson(args) {
     const configJson = await readJsonFile(`./config/config.json`).catch(() => ({})) ?? {};
     const deployJson = {
+        // base deploy json
         ...configJson["deploy"],
+        // overwrites for where/ghost
         ...(configJson[args.where] ?? {})["deploy"],
+        // overwrite for codeName
         codeName: args.codeName
     };
     ScriptKeys.forEach(scriptKey => formatScript(args, deployJson, scriptKey));

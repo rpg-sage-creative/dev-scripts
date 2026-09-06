@@ -1,3 +1,6 @@
+/**
+ * Creates a Record of flag keys where the value is the number of dashes at the beginning of the flag.
+ */
 function parseFlags(args) {
     const filtered = args.filter(arg => arg.startsWith("-") && !arg.includes("="));
     return filtered.reduce((flags, flag) => {

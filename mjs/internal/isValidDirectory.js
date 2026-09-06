@@ -6,6 +6,7 @@ export function isValidDirectory(path) {
         return ValidDirectoryRegExp.test(name) && statSync(path).isDirectory();
     }
     catch (ex) {
+        // ignore
     }
     return false;
 }

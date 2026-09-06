@@ -6,7 +6,7 @@
 
 		"composite": false,
 
-		"declaration": false,
+		"declaration": true,
 		// "declarationDir": "./types",
 		// "declarationMap": true,
 
@@ -14,7 +14,7 @@
 
 		"forceConsistentCasingInFileNames": true,
 
-		"incremental": false,
+		"incremental": true,
 
 		// "importsNotUsedAsValues": "error",
 		// "verbatimModuleSyntax": true,
@@ -39,8 +39,7 @@
 
 		"pretty": true,
 
-		"removeComments": true,
-
+		"removeComments": false,
 		"rootDir": "./src",
 
 		"skipLibCheck": true,
@@ -54,14 +53,9 @@
 		"stripInternal": true,
 
 		"target": "ES2024",
+		"types": ["node"],
 
 		"verbatimModuleSyntax": true
 	},
-	"exclude": [
-		".github",
-		".vscode",
-		"mjs",
-		"node_modules",
-		"sh"
-	]
+	"include": ["src"]
 }

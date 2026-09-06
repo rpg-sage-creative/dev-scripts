@@ -2,6 +2,9 @@ import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { isValidDirectory } from "./isValidDirectory.js";
 import { nameSorter } from "./nameSorter.js";
+/**
+ * Returns all subFolder names that don't start with a period.
+ */
 export function getSubFolders(path) {
     try {
         if (isValidDirectory(path)) {
@@ -12,6 +15,7 @@ export function getSubFolders(path) {
         }
     }
     catch (ex) {
+        // ignore
     }
     return [];
 }
