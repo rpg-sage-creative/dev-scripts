@@ -10,10 +10,14 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RELEASE_TAG: ${{ github.ref_name }}
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
 
-  build:
-    name: Build Release
+  build_release_publish:
+    name: Build, Release, and Publish
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Release Tag"
@@ -31,41 +35,11 @@ jobs:
         run: pnpm install
       - name: Build Repo
         run: pnpm build
-
-  release:
-    needs: build
-    name: Create Release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
       - name: Create Release
         run: |
           gh release create "$RELEASE_TAG" \
               --repo="$GITHUB_REPOSITORY" \
               --title="${GITHUB_REPOSITORY#*/} ${RELEASE_TAG#v}" \
               --generate-notes
-
-  publish:
-    needs: release
-    name: Publish Package
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    steps:
-      - name: "Checkout Release Tag"
-        uses: actions/checkout@v5
-      - name: "Setup Node: 24"
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: https://npm.pkg.github.com/
-      - name: "Setup PNPM: 10"
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - name: Install Dependencies
-        run: pnpm install
       - name: Publish Package
         run: pnpm publish --no-git-checks
