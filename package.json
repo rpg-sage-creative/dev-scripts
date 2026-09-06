@@ -12,6 +12,10 @@
 		"@rpg-sage-creative:registry": "https://npm.pkg.github.com"
 	},
 	"bin": "./sh/bin.sh",
+	"devDependencies": {
+		"@types/node": "^24.12.2",
+		"typescript": "^7.0.2"
+	},
 	"scripts": {
 		"scrub": "pnpm run '/^scrub::.*/'",
 		"scrub::node_modules": "rm -rf node_modules",
@@ -26,10 +30,7 @@
 		"build": "[ -f './tsconfig.json' ] && tsc -b --force tsconfig.json",
 		"buildIfMissing": "[ -d './build' ] || pnpm build",
 		"build:fresh": "pnpm scrub && pnpm build",
-		"release": "/bin/bash ./sh/bin.sh create-release --noTest"
-	},
-	"devDependencies": {
-		"@types/node": "^24.12.2",
-		"typescript": "^7.0.2"
+		"release": "/bin/bash ./sh/bin.sh create-release --noTest",
+		"refresh-tags": "/bin/bash ./sh/bin.sh refresh-tags"
 	}
 }

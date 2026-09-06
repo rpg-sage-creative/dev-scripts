@@ -17,8 +17,8 @@ FLAG="$2"
 if [ "$WHICH" == "create-indexes" ]; then
 	node "$MJS_PATH/createIndexes.mjs" "$@"
 
-elif [ "$WHICH" == "create-jest-todos" ]; then
-	node "$MJS_PATH/createJestTodos.mjs" "$@"
+elif [ "$WHICH" == "create-test-todos" ]; then
+	node "$MJS_PATH/createTestTodos.mjs" "$@"
 
 elif [ "$WHICH" == "create-release" ]; then
 	/bin/bash "$SH_PATH/release.sh" "$@"
@@ -30,27 +30,19 @@ elif [ "$WHICH" == "refresh-tags" ]; then
 	git tag -l | xargs git tag -d
 	git fetch --tags
 
+elif [ "$WHICH" == "test-src-ts-file" ]; then
+	/bin/bash "$SH_PATH/test-src-ts-file.sh" "$FLAG"
+
 elif [ "$WHICH" == "write-env-json" ]; then
 	node "$MJS_PATH/writeEnvJson.mjs" "$@"
-
-# old/deprecated build/test
-elif [ "$WHICH" == "build" ]; then
-	echo "DEPRECATED: update your package.json scripts"
-	/bin/bash "$SH_PATH/build.sh" "$@"
-
-elif [ "$WHICH" == "test" ]; then
-	echo "DEPRECATED: update your package.json scripts"
-	/bin/bash "$SH_PATH/test.sh" "$@"
 
 else
 	echo "dev-scripts usage:"
 	echo "    pnpm dev-scripts create-indexes"
-	echo "    pnpm dev-scripts create-jest-todos"
+	echo "    pnpm dev-scripts create-test-todos"
 	echo "    pnpm dev-scripts create-release"
 	echo "    pnpm dev-scripts deploy"
 	echo "    pnpm dev-scripts refresh-tags"
+	echo "    pnpm dev-scripts test-src-ts-file"
 	echo "    pnpm dev-scripts write-env-json"
-	echo "dev-scripts usage (deprecated):"
-	echo "    pnpm dev-scripts build"
-	echo "    pnpm dev-scripts test"
 fi

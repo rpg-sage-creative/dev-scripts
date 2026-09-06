@@ -128,12 +128,12 @@ git push origin develop
 # step 6 - delete release branch
 git branch -D "$RELEASE_BRANCH" || true
 git push origin --delete "$RELEASE_BRANCH" || true
+
 # step 7 - push tags
 git push --tags
-if [ "$?" != "0" ]; then echo "Failed push tags!"; exit 1; fi
 
 # step 8 - refresh tags
 git tag -l | xargs git tag -d
-git fetch --tags
+git fetch -p --tags
 
 echo "Release $RELEASE_TAG ($TYPE) Done."
