@@ -5,7 +5,7 @@ Each package/submodule in rpg-sage will use tsconfig.mono.json to ensure proper 
 	"extends": "../../../tsconfig.json",
 	"compilerOptions": {
 		"composite": true,
-		"outDir": "./build",
+		"outDir": "./mjs",
 		"rootDir": "./src",
 	},
 	"exclude": [
